@@ -1,0 +1,2 @@
+# Ignore known false positives or low severity issues in base images
+CVE-2024-xxxx  # Example - expired or non-applicable

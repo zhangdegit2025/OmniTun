@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "omnitun.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "omnitun.labels" . | nindent 4 }}
+    app.kubernetes.io/component: config
+data:
+  log-level: {{ .Values.config.logLevel | quote }}
+  log-format: {{ .Values.config.logFormat | quote }}
+  metrics-enabled: "true"
+  metrics-port: {{ .Values.service.metricsPort | quote }}
+  nats-url: {{ printf "nats://%s:4222" (include "omnitun.nats.fullname" .) | quote }}
+  valkey-url: {{ printf "%s:6379" (include "omnitun.valkey.fullname" .) | quote }}
+  clickhouse-url: {{ printf "http://%s:8123" (include "omnitun.clickhouse.fullname" .) | quote }}
+  relay-health-interval: "30s"
+  relay-heartbeat-timeout: "90s"
+  relay-region: {{ .Values.config.relayRegion | default "ap-southeast-1" | quote }}
+  agent-reconnect-backoff-min: "1s"
+  agent-reconnect-backoff-max: "60s"
+  agent-connection-timeout: "10s"
+  p2p-stun-servers: "stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302"
+  p2p-punch-attempts: "5"
+  p2p-punch-timeout: "3s"
+  compress-algorithm: "zstd"
+  compress-level: "3"

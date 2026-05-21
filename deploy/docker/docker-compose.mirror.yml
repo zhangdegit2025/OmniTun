@@ -1,0 +1,18 @@
+# OmniTun - mirrors xuanyuan.run proxy
+version: "3.9"
+
+services:
+  postgres:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/postgres:16-alpine
+
+  valkey:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/valkey/valkey:8-alpine
+
+  nats:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/nats:2-alpine
+
+  clickhouse:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/clickhouse/clickhouse-server:24-alpine
+
+  minio:
+    image: v8z7mqygym93q0vv03-quay.xuanyuan.run/minio/minio:latest

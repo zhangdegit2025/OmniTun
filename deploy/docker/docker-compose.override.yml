@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.server
+    volumes:
+      - ../../cmd:/app/cmd:ro
+      - ../../internal:/app/internal:ro
+      - ../../go.mod:/app/go.mod:ro
+      - ../../go.sum:/app/go.sum:ro
+    environment:
+      LOG_LEVEL: debug
+      DEBUG_ENABLED: "true"
+    ports:
+      - "40000:40000"
+
+  orchestrator:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.server
+    volumes:
+      - ../../cmd:/app/cmd:ro
+      - ../../internal:/app/internal:ro
+      - ../../go.mod:/app/go.mod:ro
+      - ../../go.sum:/app/go.sum:ro
+    environment:
+      LOG_LEVEL: debug
+      DEBUG_ENABLED: "true"
+
+  relay:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.relay
+    volumes:
+      - ../../cmd:/app/cmd:ro
+      - ../../internal:/app/internal:ro
+      - ../../go.mod:/app/go.mod:ro
+      - ../../go.sum:/app/go.sum:ro
+    environment:
+      LOG_LEVEL: debug
+      DEBUG_ENABLED: "true"
+
+  web:
+    build:
+      context: ../../web
+      dockerfile: Dockerfile
+    volumes:
+      - ../../web/src:/app/src:ro
+    environment:
+      NODE_ENV: development
+      VITE_API_BASE_URL: http://localhost:8080

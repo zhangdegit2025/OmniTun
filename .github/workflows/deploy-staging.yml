@@ -1,0 +1,21 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and push Docker images
+        run: |
+          docker build -f deploy/docker/Dockerfile.server -t ghcr.io/omnitun/server:${{ github.sha }} .
+          docker build -f deploy/docker/Dockerfile.relay -t ghcr.io/omnitun/relay:${{ github.sha }} .
+          docker push ghcr.io/omnitun/server:${{ github.sha }}
+          docker push ghcr.io/omnitun/relay:${{ github.sha }}
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/server server=ghcr.io/omnitun/server:${{ github.sha }} -n omnitun-staging
+          kubectl rollout status deployment/server -n omnitun-staging

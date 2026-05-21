@@ -1,0 +1,1 @@
+ALTER TABLE tunnels DROP COLUMN IF EXISTS tags;

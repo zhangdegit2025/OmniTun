@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "omnitun.fullname" . }}-relay
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "omnitun.relayLabels" . | nindent 4 }}
+    app.kubernetes.io/component: relay
+spec:
+  replicas: {{ .Values.relay.replicaCount | default 2 }}
+  selector:
+    matchLabels:
+      {{- include "omnitun.relaySelectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: relay
+  template:
+    metadata:
+      labels:
+        {{- include "omnitun.relaySelectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: relay
+    spec:
+      containers:
+        - name: relay
+          image: {{ printf "%s:%s" .Values.relay.image.repository .Values.relay.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: tcp-tunnel
+              containerPort: 443
+              protocol: TCP
+            - name: udp-tunnel
+              containerPort: 443
+              protocol: UDP
+            - name: metrics
+              containerPort: {{ .Values.service.metricsPort }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "omnitun.fullname" . }}-config
+            - secretRef:
+                name: {{ include "omnitun.fullname" . }}-secrets
+          env:
+            - name: CONTROL_URL
+              value: {{ printf "%s:9002" (include "omnitun.fullname" .) }}
+            - name: NATS_URL
+              value: {{ printf "nats://%s:4222" (include "omnitun.nats.fullname" .) }}
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      serviceAccountName: {{ include "omnitun.fullname" . }}
+      securityContext:
+        fsGroup: 1000

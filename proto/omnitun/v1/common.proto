@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package omnitun.v1;
+
+option go_package = "github.com/omnitun/omnitun/proto/omnitun/v1;omnitunv1";
+
+message PaginationRequest {
+  int32 limit = 1;
+  string cursor = 2;
+}
+
+message PaginationResponse {
+  string next_cursor = 1;
+  bool has_more = 2;
+}

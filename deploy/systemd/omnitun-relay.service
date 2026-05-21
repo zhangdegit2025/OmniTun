@@ -1,0 +1,31 @@
+[Unit]
+Description=OmniTun Relay Node
+Documentation=https://docs.omnitun.io
+After=network-online.target omnitun-server.service
+Wants=network-online.target
+Requires=omnitun-server.service
+
+[Service]
+Type=simple
+User=omnitun
+Group=omnitun
+ExecStart=/usr/local/bin/omnitun-relay --config /etc/omnitun/config.yaml
+ExecStop=/bin/kill -SIGTERM $MAINPID
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=131072
+
+# Privileged ports (443) require CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/omnitun /var/log/omnitun
+PrivateTmp=yes
+
+Environment=OTEL_SERVICE_NAME=omnitun-relay
+
+[Install]
+WantedBy=multi-user.target

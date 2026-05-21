@@ -1,0 +1,66 @@
+# OmniTun Production Configuration
+# 生成时间: 2026-05-20
+
+# ---- 数据库 ----
+database_url: "${DATABASE_URL:-postgres://omnitun:${DB_PASSWORD}@postgres:5432/omnitun?sslmode=require}"
+clickhouse_url: "${CLICKHOUSE_URL:-http://clickhouse:8123}"
+valkey_url: "${VALKEY_URL:-redis://valkey:6379/0}"
+
+# ---- 消息队列 ----
+nats_url: "${NATS_URL:-nats://nats:4222}"
+
+# ---- 对象存储 ----
+s3_endpoint: "${S3_ENDPOINT:-http://minio:9000}"
+s3_access_key: "${S3_ACCESS_KEY:-admin}"
+s3_secret_key: "${S3_SECRET_KEY}"
+s3_bucket: "${S3_BUCKET:-omnitun}"
+s3_use_ssl: false
+
+# ---- 服务端口 ----
+server_port: 8080
+metrics_port: 9090
+gateway_port: 9443
+relay_port: 443
+
+# ---- 认证 ----
+auth:
+  jwt_public_key_file: "/etc/omnitun/keys/jwt_rsa_public.pem"
+  jwt_private_key_file: "/etc/omnitun/keys/jwt_rsa_private.pem"
+  token_expiry: 3600
+  refresh_token_expiry: 2592000
+
+# ---- 隧道 ----
+tunnel:
+  default_region: "ap-southeast-1"
+  max_connections_per_tunnel: 1000
+  idle_timeout: 300
+  buffer_size: 65536
+
+# ---- Relay ----
+relay:
+  region: "${RELAY_REGION:-ap-southeast-1}"
+  domain: "${RELAY_DOMAIN:-relay.omnitun.io}"
+  quic_enabled: true
+  websocket_fallback: true
+  tls_auto_generate: false
+  tls_cert_file: "/etc/omnitun/certs/fullchain.pem"
+  tls_key_file: "/etc/omnitun/certs/privkey.pem"
+
+# ---- 可观测性 ----
+log_level: "${LOG_LEVEL:-info}"
+log_format: "json"
+metrics_enabled: true
+tracing_enabled: false
+
+# ---- 速率限制 ----
+rate_limit:
+  free: 60
+  pro: 600
+  team: 6000
+  business: 60000
+
+# ---- Feature Flags ----
+features:
+  p2p_enabled: false
+  mesh_enabled: false
+  sso_enabled: false

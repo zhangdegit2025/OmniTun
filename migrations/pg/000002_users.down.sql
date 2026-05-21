@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS idx_users_org;
+DROP TABLE IF EXISTS users;

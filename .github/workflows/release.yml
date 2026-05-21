@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - name: Build binaries
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o dist/omnitun-linux-amd64 ./cmd/client/
+          GOOS=darwin GOARCH=amd64 go build -o dist/omnitun-darwin-amd64 ./cmd/client/
+          GOOS=darwin GOARCH=arm64 go build -o dist/omnitun-darwin-arm64 ./cmd/client/
+          GOOS=windows GOARCH=amd64 go build -o dist/omnitun-windows-amd64.exe ./cmd/client/
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          generate_release_notes: true

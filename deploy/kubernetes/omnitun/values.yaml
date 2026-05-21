@@ -1,0 +1,54 @@
+replicaCount: 2
+image:
+  repository: ghcr.io/omnitun/server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+postgresql:
+  enabled: true
+  auth:
+    username: omnitun
+    password: changeme
+    database: omnitun
+
+valkey:
+  enabled: true
+
+nats:
+  enabled: true
+
+clickhouse:
+  enabled: true
+
+service:
+  type: ClusterIP
+  port: 8080
+  metricsPort: 9090
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    memory: "1Gi"
+    cpu: "1000m"
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+
+relay:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/omnitun/relay
+    tag: latest
+
+autoscaling:
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilization: 75
+  targetMemoryUtilization: 80
+
+config:
+  logLevel: "info"
+  logFormat: "json"
+  relayRegion: "ap-southeast-1"

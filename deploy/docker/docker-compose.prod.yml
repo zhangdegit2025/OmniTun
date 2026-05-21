@@ -1,0 +1,101 @@
+# OmniTun Production Override Configuration
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+version: "3.9"
+
+services:
+  postgres:
+    deploy:
+      resources:
+        limits: { memory: 2G, cpus: '2' }
+        reservations: { memory: 512M }
+    volumes:
+      - /var/lib/omnitun/postgres:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options: { max-size: "50m", max-file: "5" }
+
+  valkey:
+    deploy:
+      resources:
+        limits: { memory: 512M }
+    volumes:
+      - /var/lib/omnitun/valkey:/data
+    logging:
+      driver: "json-file"
+      options: { max-size: "10m", max-file: "3" }
+
+  nats:
+    deploy:
+      resources:
+        limits: { memory: 256M }
+    volumes:
+      - /var/lib/omnitun/nats:/data
+
+  clickhouse:
+    deploy:
+      resources:
+        limits: { memory: 4G }
+    volumes:
+      - /var/lib/omnitun/clickhouse:/var/lib/clickhouse
+
+  minio:
+    deploy:
+      resources:
+        limits: { memory: 1G }
+    volumes:
+      - /var/lib/omnitun/minio:/data
+
+  api-gateway:
+    deploy:
+      resources:
+        limits: { memory: 1G }
+        reservations: { memory: 256M }
+    volumes:
+      - /etc/omnitun/keys:/keys:ro
+      - /etc/omnitun/certs:/certs:ro
+      - /var/log/omnitun:/var/log
+    environment:
+      LOG_LEVEL: "info"
+      LOG_FORMAT: "json"
+      JWT_PRIVATE_KEY_FILE: "/keys/jwt_rsa_private.pem"
+      JWT_PUBLIC_KEY_FILE: "/keys/jwt_rsa_public.pem"
+    logging:
+      driver: "json-file"
+      options: { max-size: "50m", max-file: "3" }
+
+  orchestrator:
+    deploy:
+      resources:
+        limits: { memory: 512M }
+    environment:
+      LOG_LEVEL: "info"
+      LOG_FORMAT: "json"
+    logging:
+      driver: "json-file"
+      options: { max-size: "50m", max-file: "3" }
+
+  relay:
+    deploy:
+      resources:
+        limits: { memory: 2G }
+    volumes:
+      - /etc/omnitun/certs:/certs:ro
+    environment:
+      LOG_LEVEL: "info"
+      LOG_FORMAT: "json"
+    ports:
+      - "443:443"
+      - "443:443/udp"
+    logging:
+      driver: "json-file"
+      options: { max-size: "100m", max-file: "3" }
+
+  web:
+    deploy:
+      resources:
+        limits: { memory: 128M }
+    environment:
+      API_BASE_URL: "https://api.omnitun.io"
+    logging:
+      driver: "json-file"
+      options: { max-size: "10m", max-file: "3" }

@@ -1,0 +1,253 @@
+version: "3.9"
+
+# 镜像仓库代理（首选: v8z7mqygym93q0vv03.xuanyuan.run）
+# Docker Hub: ${DOCKER_MIRROR:-}
+# GitHub GHCR: ${GHCR_MIRROR:-}
+# Quay.io:     ${QUAY_MIRROR:-}
+
+networks:
+  backend:
+    name: omnitun-backend
+    driver: bridge
+  frontend:
+    name: omnitun-frontend
+    driver: bridge
+
+volumes:
+  pg_data:
+    name: omnitun-postgres-data
+  minio_data:
+    name: omnitun-minio-data
+  clickhouse_data:
+    name: omnitun-clickhouse-data
+  nats_data:
+    name: omnitun-nats-data
+
+services:
+  postgres:
+    image: ${DOCKER_MIRROR:-}postgres:16-alpine
+    container_name: omnitun-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-omnitun}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-omnitun}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-omnitun} -d ${POSTGRES_DB:-omnitun}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  valkey:
+    image: ${DOCKER_MIRROR:-}valkey/valkey:8-alpine
+    container_name: omnitun-valkey
+    restart: unless-stopped
+    command: >
+      valkey-server
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+      --loglevel warning
+      ${VALKEY_PASSWORD:+--requirepass ${VALKEY_PASSWORD}}
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  nats:
+    image: ${DOCKER_MIRROR:-}nats:2-alpine
+    container_name: omnitun-nats
+    restart: unless-stopped
+    command: -js -m 8222
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats_data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "nats", "server", "check", "connection"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  clickhouse:
+    image: ${DOCKER_MIRROR:-}clickhouse/clickhouse-server:24-alpine
+    container_name: omnitun-clickhouse
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8123/ping || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  minio:
+    image: ${QUAY_MIRROR:-}quay.io/minio/minio:latest
+    container_name: omnitun-minio
+    restart: unless-stopped
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-changeme}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-omnitun}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api-gateway:
+    image: ${GHCR_MIRROR:-}ghcr.io/omnitun/server:latest
+    container_name: omnitun-api-gateway
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://omnitun:changeme@postgres:5432/omnitun}
+      VALKEY_URL: valkey:6379
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD:-}
+      NATS_URL: ${NATS_URL:-nats://nats:4222}
+      CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-changeme}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-omnitun}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:-}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:-}
+      JWT_ISSUER: ${JWT_ISSUER:-omnitun}
+      METRICS_ENABLED: ${METRICS_ENABLED:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+    ports:
+      - "8080:8080"
+      - "9443:9443"
+      - "9090:9090"
+    networks:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  orchestrator:
+    image: ${GHCR_MIRROR:-}ghcr.io/omnitun/server:latest
+    container_name: omnitun-orchestrator
+    restart: unless-stopped
+    command: orchestrator
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://omnitun:changeme@postgres:5432/omnitun}
+      VALKEY_URL: valkey:6379
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD:-}
+      NATS_URL: ${NATS_URL:-nats://nats:4222}
+      METRICS_ENABLED: ${METRICS_ENABLED:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+    ports:
+      - "9002:9002"
+      - "9190:9090"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:9090/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  relay:
+    image: ${GHCR_MIRROR:-}ghcr.io/omnitun/relay:latest
+    container_name: omnitun-relay
+    restart: unless-stopped
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    environment:
+      CONTROL_URL: api-gateway:9002
+      NATS_URL: ${NATS_URL:-nats://nats:4222}
+      RELAY_REGION: local
+      RELAY_DOMAIN: localhost
+      METRICS_ENABLED: ${METRICS_ENABLED:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+    ports:
+      - "4443:443"
+      - "4443:443/udp"
+      - "9390:9090"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:9090/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  web:
+    image: ${GHCR_MIRROR:-}ghcr.io/omnitun/web:latest
+    container_name: omnitun-web
+    restart: unless-stopped
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    environment:
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

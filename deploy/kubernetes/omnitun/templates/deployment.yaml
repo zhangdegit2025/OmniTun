@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "omnitun.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "omnitun.labels" . | nindent 4 }}
+    app.kubernetes.io/component: server
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "omnitun.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
+  template:
+    metadata:
+      labels:
+        {{- include "omnitun.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: server
+    spec:
+      containers:
+        - name: server
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: api
+              containerPort: 8080
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.service.metricsPort }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "omnitun.fullname" . }}-config
+            - secretRef:
+                name: {{ include "omnitun.fullname" . }}-secrets
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "omnitun.fullname" . }}-secrets
+                  key: database-url
+            - name: NATS_URL
+              value: {{ printf "nats://%s:4222" (include "omnitun.nats.fullname" .) }}
+            - name: VALKEY_URL
+              value: {{ printf "%s:6379" (include "omnitun.valkey.fullname" .) }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: api
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: api
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      serviceAccountName: {{ include "omnitun.fullname" . }}
+      securityContext:
+        fsGroup: 1000

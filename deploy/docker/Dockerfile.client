@@ -1,0 +1,25 @@
+# ---- 镜像代理（内网环境通过 build-arg 传入） ----
+ARG GOLANG_IMAGE=golang:1.23-alpine
+ARG DISTROLESS_IMAGE=gcr.io/distroless/static-debian12:nonroot
+
+FROM ${GOLANG_IMAGE} AS builder
+
+WORKDIR /app
+
+ARG GOPROXY=https://proxy.golang.org,direct
+ENV GOPROXY=${GOPROXY}
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /omnitun-client ./cmd/client
+
+FROM ${DISTROLESS_IMAGE}
+
+COPY --from=builder /omnitun-client /omnitun-client
+
+USER 65532:65532
+
+ENTRYPOINT ["/omnitun-client"]

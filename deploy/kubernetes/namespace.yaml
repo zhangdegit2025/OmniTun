@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: omnitun-system
+  labels:
+    app.kubernetes.io/part-of: omnitun
+    app.kubernetes.io/managed-by: terraform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: omnitun-relay
+  labels:
+    app.kubernetes.io/part-of: omnitun
+    app.kubernetes.io/managed-by: terraform

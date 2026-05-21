@@ -1,0 +1,79 @@
+name: omnitun
+
+services:
+  postgres:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/postgres:16-alpine
+    container_name: omnitun-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: omnitun
+      POSTGRES_PASSWORD: omnitun
+      POSTGRES_DB: omnitun
+    volumes:
+      - omnitun_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omnitun -d omnitun"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  valkey:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/valkey/valkey:8-alpine
+    container_name: omnitun-valkey
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  nats:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/nats:2-alpine
+    container_name: omnitun-nats
+    restart: unless-stopped
+    command: -js -m 8222
+    ports:
+      - "4223:4222"
+      - "8223:8222"
+    healthcheck:
+      test: ["CMD", "nats", "server", "check", "connection"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  clickhouse:
+    image: v8z7mqygym93q0vv03.xuanyuan.run/clickhouse/clickhouse-server:24-alpine
+    container_name: omnitun-clickhouse
+    restart: unless-stopped
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8123/ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: v8z7mqygym93q0vv03-quay.xuanyuan.run/minio/minio:latest
+    container_name: omnitun-minio
+    restart: unless-stopped
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: changeme
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  omnitun_pg_data:

@@ -1,0 +1,24 @@
+database_url: "postgres://omnitun:omnitun@localhost:5433/omnitun?sslmode=disable"
+valkey_url: "redis://localhost:6380/0"
+nats_url: "nats://localhost:4223"
+clickhouse_url: "http://localhost:8124"
+traffic_logging: true
+s3_endpoint: "http://localhost:9002"
+s3_access_key: "admin"
+s3_secret_key: "changeme"
+s3_bucket: "omnitun"
+log_level: "debug"
+log_format: "text"
+server_port: 8080
+metrics_port: 9090
+relay_port: 443
+admin_auth_secret: "admin-dev-secret-change-in-production"
+admin_port: 8080
+
+auth:
+  jwt_secret: "omnitun-dev-secret-key-do-not-use-in-production"
+  token_expiry: 86400
+  oidc_client_id: ""
+  oidc_client_secret: ""
+  oidc_discovery_url: ""
+  oidc_redirect_url: "http://localhost:8080/v1/auth/oidc/callback"

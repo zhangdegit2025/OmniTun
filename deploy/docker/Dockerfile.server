@@ -1,0 +1,31 @@
+# ---- 镜像代理（内网环境通过 build-arg 传入） ----
+# docker build --build-arg GOLANG_IMAGE=v8z7mqygym93q0vv03.xuanyuan.run/library/golang:1.23-alpine ...
+ARG GOLANG_IMAGE=golang:1.23-alpine
+ARG DISTROLESS_IMAGE=gcr.io/distroless/static-debian12:nonroot
+
+FROM ${GOLANG_IMAGE} AS builder
+
+WORKDIR /app
+
+# 内网环境设置 Go module proxy（可选 build-arg）
+ARG GOPROXY=https://proxy.golang.org,direct
+ENV GOPROXY=${GOPROXY}
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /omnitun-server ./cmd/server
+
+FROM ${DISTROLESS_IMAGE}
+
+COPY --from=builder /omnitun-server /omnitun-server
+COPY --from=builder /app/config.example.yaml /config.yaml
+
+USER 65532:65532
+
+EXPOSE 8080 9090 9443
+
+ENTRYPOINT ["/omnitun-server"]
+CMD ["--config", "/config.yaml"]

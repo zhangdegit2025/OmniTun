@@ -1,0 +1,17 @@
+*.swp
+*.bak
+*.tmp
+*.orig
+.git/
+.gitignore
+.bridge/
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/
+*.tgz
+charts/
+Chart.lock
+values-*.yaml
+values-*.yml

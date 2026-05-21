@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: omnitun-config
+  namespace: omnitun-system
+  labels:
+    app.kubernetes.io/part-of: omnitun
+    app.kubernetes.io/component: config
+data:
+  log-level: "info"
+  log-format: "json"
+  metrics-enabled: "true"
+  metrics-port: "9090"
+  nats-url: "nats://nats.omnitun-system:4222"
+  valkey-url: "valkey.omnitun-system:6379"
+  clickhouse-url: "http://clickhouse.omnitun-system:8123"
+  minio-endpoint: "minio.omnitun-system:9000"
+  minio-bucket-name: "omnitun"
+  jwt-issuer: "omnitun"
+  jwt-ttl: "24h"
+  jwt-refresh-ttl: "720h"
+  api-base-url: "https://api.omnitun.io"
+  api-read-timeout: "30s"
+  api-write-timeout: "60s"
+  api-idle-timeout: "120s"
+  api-max-request-size: "10485760"
+  rate-limit-enabled: "true"
+  rate-limit-rps: "100"
+  rate-limit-burst: "200"
+  tunnel-max-per-tenant: "100"
+  tunnel-idle-timeout: "300s"
+  relay-health-interval: "30s"
+  relay-heartbeat-timeout: "90s"
+  relay-region: "ap-southeast-1"
+  agent-reconnect-backoff-min: "1s"
+  agent-reconnect-backoff-max: "60s"
+  agent-connection-timeout: "10s"
+  p2p-stun-servers: "stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302"
+  p2p-punch-attempts: "5"
+  p2p-punch-timeout: "3s"
+  acme-directory-url: "https://acme-v02.api.letsencrypt.org/directory"
+  acme-cert-renew-before: "720h"
+  audit-retention-days: "365"
+  compress-algorithm: "zstd"
+  compress-level: "3"

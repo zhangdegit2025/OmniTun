@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  relay-sg:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.relay
+    container_name: omnitun-relay-sg
+    restart: unless-stopped
+    environment:
+      RELAY_REGION: ap-southeast-1
+      RELAY_ID: relay-sg-01
+      CONTROL_URL: http://server:8080
+      RELAY_PORT: 4443
+      METRICS_PORT: 9194
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+    ports:
+      - "4443:4443"
+      - "9194:9090"
+    networks:
+      - backend
+
+  relay-us:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.relay
+    container_name: omnitun-relay-us
+    restart: unless-stopped
+    environment:
+      RELAY_REGION: us-east-1
+      RELAY_ID: relay-us-01
+      CONTROL_URL: http://server:8080
+      RELAY_PORT: 4444
+      METRICS_PORT: 9195
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+    ports:
+      - "4444:4444"
+      - "9195:9090"
+    networks:
+      - backend
+
+  relay-eu:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.relay
+    container_name: omnitun-relay-eu
+    restart: unless-stopped
+    environment:
+      RELAY_REGION: eu-central-1
+      RELAY_ID: relay-eu-01
+      CONTROL_URL: http://server:8080
+      RELAY_PORT: 4445
+      METRICS_PORT: 9196
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+    ports:
+      - "4445:4445"
+      - "9196:9090"
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: omnitun-backend
+    external: true

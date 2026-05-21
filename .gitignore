@@ -1,0 +1,43 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test binary
+*.test
+
+# Output of go coverage
+coverage
+
+# Dependency directories
+vendor/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Config overrides (keep example)
+config.yaml
+
+# Keys
+*.pem
+
+# Temp
+tmp/
+temp/

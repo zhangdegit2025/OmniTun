@@ -1,0 +1,22 @@
+database_url: "postgres://omnitun:omnitun@localhost:5432/omnitun?sslmode=disable"
+valkey_url: "redis://localhost:6379/0"
+nats_url: "nats://localhost:4222"
+clickhouse_url: "clickhouse://localhost:9000/omnitun"
+s3_endpoint: "http://localhost:9000"
+log_level: "info"
+server_port: 8080
+relay_port: 8443
+
+auth:
+  jwt_secret: "change-me-in-production"
+  jwt_public_key: ""
+  jwt_private_key: ""
+  token_expiry: 86400
+  saml_enabled: false
+  saml_entity_id: "omnitun-sp"
+  saml_acs_url: "http://localhost:8080/v1/auth/saml/acs"
+  saml_metadata_url: ""
+  oidc_client_id: ""
+  oidc_client_secret: ""
+  oidc_discovery_url: ""
+  oidc_redirect_url: "http://localhost:8080/v1/auth/oidc/callback"

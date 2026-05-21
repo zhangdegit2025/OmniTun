@@ -1,0 +1,35 @@
+CREATE TABLE tunnels (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id UUID NOT NULL REFERENCES organizations(id),
+    workspace_id    UUID NOT NULL REFERENCES workspaces(id),
+    name            TEXT NOT NULL,
+    slug            TEXT NOT NULL,
+    protocol        TEXT NOT NULL,
+    local_port      INTEGER NOT NULL,
+    local_host      TEXT NOT NULL DEFAULT '127.0.0.1',
+    custom_domain   TEXT,
+    region          TEXT NOT NULL DEFAULT 'auto',
+    tls_mode        TEXT NOT NULL DEFAULT 'edge',
+    tls_cert_id     UUID,
+    auth_mode       TEXT NOT NULL DEFAULT 'none',
+    auth_config     JSONB,
+    compression     BOOLEAN NOT NULL DEFAULT true,
+    buffer_size     INTEGER NOT NULL DEFAULT 65536,
+    max_connections INTEGER NOT NULL DEFAULT 100,
+    idle_timeout    INTEGER NOT NULL DEFAULT 300,
+    status          TEXT NOT NULL DEFAULT 'stopped',
+    relay_id        UUID,
+    agent_id        TEXT,
+    agent_version   TEXT,
+    agent_ip        INET,
+    connected_at    TIMESTAMPTZ,
+    last_activity_at TIMESTAMPTZ,
+    bytes_in_total  BIGINT NOT NULL DEFAULT 0,
+    bytes_out_total BIGINT NOT NULL DEFAULT 0,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at      TIMESTAMPTZ
+);
+CREATE INDEX idx_tunnels_org_ws ON tunnels(organization_id, workspace_id);
+CREATE INDEX idx_tunnels_domain ON tunnels(custom_domain) WHERE custom_domain IS NOT NULL;
+CREATE INDEX idx_tunnels_slug ON tunnels(slug);

@@ -1,0 +1,11 @@
+{
+    "registry-mirrors": [
+        "https://v8z7mqygym93q0vv03.xuanyuan.run"
+    ],
+    "insecure-registries": [],
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "10m",
+        "max-file": "3"
+    }
+}

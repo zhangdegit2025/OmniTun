@@ -1,0 +1,92 @@
+groups:
+  - name: omnitun
+    rules:
+      - alert: OmniTunRelayDown
+        expr: omnitun_relay_heartbeat == 0
+        for: 2m
+        labels:
+          severity: warning
+          component: relay
+        annotations:
+          summary: "Relay node {{ $labels.relay_id }} is down"
+          description: "Relay {{ $labels.relay_id }} in region {{ $labels.region }} has not sent a heartbeat for 2 minutes."
+
+      - alert: OmniTunHighErrorRate
+        expr: rate(omnitun_api_errors_total[5m]) / rate(omnitun_api_requests_total[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "API error rate above 1%"
+          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+
+      - alert: OmniTunHighLatency
+        expr: histogram_quantile(0.95, rate(omnitun_api_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "P95 API latency above 1s"
+          description: "P95 latency is {{ $value }}s"
+
+      - alert: OmniTunCertExpiring
+        expr: omnitun_cert_expiry_days < 7
+        for: 1h
+        labels:
+          severity: warning
+          component: tls
+        annotations:
+          summary: "TLS certificate expiring soon"
+          description: "Certificate for {{ $labels.domain }} expires in {{ $value }} days."
+
+      - alert: OmniTunHighDiskUsage
+        expr: omnitun_disk_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Disk usage above 80%"
+          description: "Disk usage on {{ $labels.instance }} is {{ $value }}%"
+
+      - alert: OmniTunDatabaseDown
+        expr: omnitun_database_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection lost"
+          description: "Cannot connect to PostgreSQL on {{ $labels.instance }}"
+
+      - alert: OmniTunP2PSuccessRateLow
+        expr: omnitun_p2p_success_rate < 0.8
+        for: 1h
+        labels:
+          severity: info
+          component: p2p
+        annotations:
+          summary: "P2P success rate below 80%"
+          description: "P2P hole punching success rate is {{ $value | humanizePercentage }}"
+
+      - alert: OmniTunNATSDisconnected
+        expr: omnitun_nats_connection_status == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: messaging
+        annotations:
+          summary: "NATS connection lost"
+          description: "NATS connection on {{ $labels.instance }} has been down for 2 minutes."
+
+      - alert: OmniTunHighMemoryUsage
+        expr: omnitun_memory_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Memory usage above 85%"
+          description: "Memory usage on {{ $labels.instance }} is {{ $value }}%"

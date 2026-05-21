@@ -1,0 +1,77 @@
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+  go: "1.23"
+
+linters:
+  enable:
+    - errcheck
+    - gosec
+    - govet
+    - staticcheck
+    - ineffassign
+    - unconvert
+    - goimports
+    - revive
+    - misspell
+    - bodyclose
+    - noctx
+    - sqlclosecheck
+    - wastedassign
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  gosec:
+    includes:
+      - G101
+      - G102
+      - G103
+      - G104
+      - G106
+      - G107
+      - G201
+      - G202
+      - G203
+      - G204
+      - G301
+      - G302
+      - G303
+      - G304
+      - G305
+      - G306
+      - G401
+      - G402
+      - G403
+      - G404
+      - G501
+      - G502
+      - G503
+      - G504
+      - G505
+      - G601
+  revive:
+    rules:
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: error-return
+      - name: error-strings
+      - name: error-naming
+      - name: exported
+      - name: if-return
+      - name: increment-decrement
+      - name: var-naming
+      - name: package-comments
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: unexported-return
+      - name: indent-error-flow
+      - name: errorf
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0

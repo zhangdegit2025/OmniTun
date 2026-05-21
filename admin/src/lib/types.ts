@@ -1,0 +1,255 @@
+export interface AdminUser {
+  id: string
+  email: string
+  name: string
+  role: 'super_admin' | 'admin' | 'operator'
+  created_at: string
+}
+
+export interface Organization {
+  id: string
+  name: string
+  email: string
+  plan: string
+  status: 'active' | 'suspended' | 'trial'
+  tunnel_count: number
+  user_count: number
+  bandwidth_used: number
+  bandwidth_limit: number
+  created_at: string
+}
+
+export interface OrgStats {
+  total_orgs: number
+  active_orgs: number
+  trial_orgs: number
+  suspended_orgs: number
+}
+
+export interface User {
+  id: string
+  email: string
+  name: string
+  org_id: string
+  org_name: string
+  role: string
+  status: 'active' | 'disabled'
+  created_at: string
+  last_login_at?: string
+}
+
+export interface RelayNode {
+  id: string
+  name: string
+  hostname: string
+  region: string
+  status: 'online' | 'offline' | 'maintenance'
+  version: string
+  cpu_usage: number
+  memory_usage: number
+  bandwidth_in: number
+  bandwidth_out: number
+  active_connections: number
+  last_seen_at: string
+  created_at: string
+}
+
+export interface RelayStats {
+  total_nodes: number
+  online_nodes: number
+  total_bandwidth_in: number
+  total_bandwidth_out: number
+  total_connections: number
+}
+
+export interface DashboardStats {
+  total_orgs: number
+  active_tunnels: number
+  today_traffic_bytes: number
+  active_relays: number
+}
+
+export interface RecentSignup {
+  id: string
+  org_name: string
+  email: string
+  plan: string
+  created_at: string
+}
+
+export interface SystemHealth {
+  component: string
+  status: 'healthy' | 'degraded' | 'down'
+  uptime_percent: number
+  last_checked: string
+}
+
+export interface Tunnel {
+  id: string
+  name: string
+  org_id: string
+  protocol: string
+  local_port: number
+  remote_port: number
+  domain?: string
+  status: 'active' | 'stopped' | 'error'
+  traffic_in: number
+  traffic_out: number
+  created_at: string
+}
+
+export interface TrafficPoint {
+  timestamp: string
+  bytes_in: number
+  bytes_out: number
+}
+
+export interface AuditLog {
+  id: string
+  org_id: string
+  user_id: string
+  action: string
+  resource_type: string
+  resource_id: string
+  details: string
+  client_ip: string
+  created_at: string
+}
+
+export interface Announcement {
+  id: string
+  title: string
+  body: string
+  severity: 'info' | 'warning' | 'critical'
+  target: string
+  active: boolean
+  start_at: string | null
+  end_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface SystemCertificate {
+  id: string
+  domain: string
+  issuer: string
+  not_before: string
+  not_after: string
+  days_remaining: number
+  auto_renew: boolean
+  status: 'valid' | 'expiring_soon' | 'expired'
+}
+
+export interface TenantCertificate {
+  id: string
+  domain: string
+  issuer: string
+  org_id: string
+  org_name: string
+  not_before: string
+  not_after: string
+  days_remaining: number
+  auto_renew: boolean
+  status: 'valid' | 'expiring_soon' | 'expired'
+}
+
+export interface MRRData {
+  mrr: number
+  arr: number
+  active_subscriptions: number
+  churn_rate: number
+  trend: MRRTrendPoint[]
+  forecast: RevenueForecast
+}
+
+export interface MRRTrendPoint {
+  month: string
+  mrr: number
+  new: number
+  expansion: number
+  contraction: number
+  churn: number
+}
+
+export interface RevenueForecast {
+  days_30: number
+  days_60: number
+  days_90: number
+}
+
+export interface ChurnData {
+  churn_rate: number
+  voluntary_churn: number
+  involuntary_churn: number
+  retention_rate: number
+  at_risk_customers: number
+  monthly_trend: { month: string; rate: number }[]
+}
+
+export interface FunnelData {
+  stages: FunnelStage[]
+}
+
+export interface FunnelStage {
+  name: string
+  count: number
+  rate: number
+}
+
+export interface Customer {
+  id: string
+  org_name: string
+  plan: string
+  mrr: number
+  status: string
+  health_score: number
+  created_at: string
+  contact_email: string
+  user_count: number
+  tunnel_count: number
+}
+
+export interface CustomerListResponse {
+  customers: Customer[]
+  total: number
+}
+
+export interface CustomerDetail extends Customer {
+  contacts: { name: string; email: string; role: string }[]
+  usage: {
+    tunnels: number
+    bandwidth_gb: number
+    active_users: number
+    connections: number
+  }
+  invoices: {
+    id: string
+    amount: number
+    status: string
+    date: string
+    plan: string
+  }[]
+  subscriptions: {
+    id: string
+    plan: string
+    status: string
+    start: string
+    end: string
+  }[]
+  activity: {
+    timestamp: string
+    action: string
+    detail: string
+  }[]
+  health_history: {
+    date: string
+    score: number
+  }[]
+}
+
+export interface CustomerHealth {
+  customer_id: string
+  health_score: number
+  trend: { date: string; score: number }[]
+  factors: { factor: string; score: number; weight: number }[]
+}

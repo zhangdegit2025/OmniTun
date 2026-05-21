@@ -1,0 +1,20 @@
+title = "OmniTun Gitleaks Config"
+
+[allowlist]
+  description = "Global allowlist"
+  paths = [
+    '''web/node_modules/''',
+    '''vendor/''',
+    '''deploy/keys/''',
+    '''config.example.yaml''',
+    '''go.sum''',
+  ]
+
+[[rules]]
+  id = "generic-api-key"
+  description = "Detect generic API keys"
+  regex = '''(?i)(api[_-]?key|secret|token|password|passwd|auth)["']?\s*[:=]\s*["'][a-zA-Z0-9_\-\.]{16,}["']'''
+  [rules.allowlist]
+    description = "Allow test/example keys"
+    regexTarget = "match"
+    regexes = ['''changeme''', '''testpass''', '''omnitun-dev-secret''', '''replace-''']
