@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api'
 import type { DashboardStats, RecentSignup } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -36,9 +37,10 @@ const planBadgeVariant: Record<string, 'default' | 'success' | 'warning' | 'seco
 }
 
 export default function Dashboard() {
+  const { t } = useTranslation()
   const statsQuery = useQuery<DashboardStats>({
     queryKey: ['admin', 'dashboard', 'stats'],
-    queryFn: () => apiRequest<DashboardStats>('/api/admin/v1/dashboard/stats'),
+    queryFn: () => apiRequest<DashboardStats>('/api/admin/v1/dashboard/metrics'),
   })
 
   const stats = statsQuery.data
@@ -47,16 +49,16 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">System overview and key metrics</p>
+        <h1 className="text-2xl font-bold">{t('dashboard.title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('dashboard.subtitle')}</p>
       </div>
 
       {statsQuery.isError ? (
         <div className="flex flex-col items-center gap-2 rounded-lg border border-destructive/50 p-6 text-center">
           <AlertCircle className="h-8 w-8 text-destructive" />
-          <p className="text-sm text-destructive">Failed to load dashboard stats</p>
+          <p className="text-sm text-destructive">{t('dashboard.failedToLoad')}</p>
           <Button variant="outline" size="sm" onClick={() => statsQuery.refetch()}>
-            Retry
+            {t('common.retry')}
           </Button>
         </div>
       ) : (
@@ -72,19 +74,19 @@ export default function Dashboard() {
             <>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Organizations</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.totalOrgs')}</CardTitle>
                   <Building2 className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-baseline gap-2">
                     <p className="text-2xl font-bold">{stats?.total_orgs ?? 0}</p>
-                    <Badge variant="success">Active</Badge>
+                    <Badge variant="success">{t('dashboard.active')}</Badge>
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Active Tunnels</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.activeTunnels')}</CardTitle>
                   <Activity className="h-4 w-4 text-emerald-500" />
                 </CardHeader>
                 <CardContent>
@@ -93,7 +95,7 @@ export default function Dashboard() {
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Today Traffic</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.todayTraffic')}</CardTitle>
                   <ArrowDownUp className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
@@ -104,7 +106,7 @@ export default function Dashboard() {
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Active Relays</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.activeRelays')}</CardTitle>
                   <Server className="h-4 w-4 text-amber-500" />
                 </CardHeader>
                 <CardContent>
@@ -119,15 +121,15 @@ export default function Dashboard() {
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Signups</CardTitle>
+            <CardTitle>{t('dashboard.recentSignups')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Organization</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>{t('dashboard.organization')}</TableHead>
+                  <TableHead>{t('common.plan')}</TableHead>
+                  <TableHead>{t('dashboard.date')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -156,37 +158,37 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>System Health</CardTitle>
+            <CardTitle>{t('dashboard.systemHealth')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between rounded-md border border-border p-3">
                 <div className="flex items-center gap-2">
                   <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-sm font-medium">API Server</span>
+                  <span className="text-sm font-medium">{t('dashboard.apiServer')}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">99.9% uptime</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.uptime')}</span>
               </div>
               <div className="flex items-center justify-between rounded-md border border-border p-3">
                 <div className="flex items-center gap-2">
                   <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-sm font-medium">Database</span>
+                  <span className="text-sm font-medium">{t('dashboard.database')}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">99.9% uptime</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.uptime')}</span>
               </div>
               <div className="flex items-center justify-between rounded-md border border-border p-3">
                 <div className="flex items-center gap-2">
                   <div className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                  <span className="text-sm font-medium">Relay Mesh</span>
+                  <span className="text-sm font-medium">{t('dashboard.relayMesh')}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">98.5% uptime</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.uptimeRelayMesh')}</span>
               </div>
               <div className="flex items-center justify-between rounded-md border border-border p-3">
                 <div className="flex items-center gap-2">
                   <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-sm font-medium">WebSocket Gateway</span>
+                  <span className="text-sm font-medium">{t('dashboard.webSocketGateway')}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">99.9% uptime</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.uptime')}</span>
               </div>
             </div>
           </CardContent>

@@ -14,6 +14,17 @@ const RelayNodeDetail = lazy(() => import('@/pages/RelayNodeDetail'))
 const AuditLogs = lazy(() => import('@/pages/AuditLogs'))
 const Announcements = lazy(() => import('@/pages/Announcements'))
 const Certificates = lazy(() => import('@/pages/Certificates'))
+const RevenueDashboard = lazy(() => import('@/pages/RevenueDashboard'))
+const CustomerCRM = lazy(() => import('@/pages/CustomerCRM'))
+const CustomerDetail = lazy(() => import('@/pages/CustomerDetail'))
+const Invoices = lazy(() => import('@/pages/Invoices'))
+const PricingConfig = lazy(() => import('@/pages/PricingConfig'))
+const DiscountCodes = lazy(() => import('@/pages/DiscountCodes'))
+const Roles = lazy(() => import('@/pages/Roles'))
+const IPWhitelist = lazy(() => import('@/pages/IPWhitelist'))
+const DataRetention = lazy(() => import('@/pages/DataRetention'))
+const SLADashboard = lazy(() => import('@/pages/SLADashboard'))
+const AuditReports = lazy(() => import('@/pages/AuditReports'))
 const Login = lazy(() => import('@/pages/Login'))
 
 function PageSkeleton() {
@@ -56,6 +67,17 @@ export default function App() {
         <Route path="audit-logs" element={<LazyRoute><AuditLogs /></LazyRoute>} />
         <Route path="announcements" element={<LazyRoute><Announcements /></LazyRoute>} />
         <Route path="certificates" element={<LazyRoute><Certificates /></LazyRoute>} />
+        <Route path="revenue" element={<LazyRoute><RevenueDashboard /></LazyRoute>} />
+        <Route path="customers" element={<LazyRoute><CustomerCRM /></LazyRoute>} />
+        <Route path="customers/:id" element={<LazyRoute><CustomerDetail /></LazyRoute>} />
+        <Route path="invoices" element={<LazyRoute><Invoices /></LazyRoute>} />
+        <Route path="pricing" element={<LazyRoute><PricingConfig /></LazyRoute>} />
+        <Route path="discounts" element={<LazyRoute><DiscountCodes /></LazyRoute>} />
+        <Route path="roles" element={<LazyRoute><Roles /></LazyRoute>} />
+        <Route path="ip-whitelist" element={<LazyRoute><IPWhitelist /></LazyRoute>} />
+        <Route path="data-retention" element={<LazyRoute><DataRetention /></LazyRoute>} />
+        <Route path="sla" element={<LazyRoute><SLADashboard /></LazyRoute>} />
+        <Route path="audit-reports" element={<LazyRoute><AuditReports /></LazyRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -10,6 +11,7 @@ const TrafficLineChart = lazy(() => import('@/components/ui/TrafficLineChart'))
 
 export default function RelayNodeDetail() {
   const { id } = useParams()
+  const { t } = useTranslation()
 
   const relay = {
     id: id ?? '1',
@@ -48,7 +50,7 @@ export default function RelayNodeDetail() {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
           <ArrowLeft className="mr-1 h-4 w-4" />
-          Back
+          {t('relayNodeDetail.back')}
         </Button>
         <div>
           <h1 className="text-2xl font-bold">{relay.name}</h1>
@@ -59,7 +61,7 @@ export default function RelayNodeDetail() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Status</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('relayNodeDetail.status')}</CardTitle>
             <Activity className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
@@ -68,7 +70,7 @@ export default function RelayNodeDetail() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">CPU Usage</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('relayNodeDetail.cpuUsage')}</CardTitle>
             <Cpu className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -77,7 +79,7 @@ export default function RelayNodeDetail() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Memory Usage</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('relayNodeDetail.memoryUsage')}</CardTitle>
             <HardDrive className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
@@ -86,7 +88,7 @@ export default function RelayNodeDetail() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Uptime</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('relayNodeDetail.uptime')}</CardTitle>
             <Globe className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -98,23 +100,23 @@ export default function RelayNodeDetail() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Node Information</CardTitle>
+            <CardTitle>{t('relayNodeDetail.nodeInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Region</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.region')}</span>
               <span className="text-sm text-muted-foreground">{relay.region}</span>
             </div>
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Version</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.version')}</span>
               <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{relay.version}</code>
             </div>
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Public IP</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.publicIp')}</span>
               <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{relay.public_ip}</code>
             </div>
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Disk Usage</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.diskUsage')}</span>
               <span className="text-sm text-muted-foreground">{relay.disk_usage}%</span>
             </div>
           </CardContent>
@@ -122,23 +124,23 @@ export default function RelayNodeDetail() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Traffic Statistics</CardTitle>
+            <CardTitle>{t('relayNodeDetail.trafficStats')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Active Connections</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.activeConnections')}</span>
               <span className="text-sm font-medium">{relay.active_connections.toLocaleString()}</span>
             </div>
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Total Tunnels</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.totalTunnels')}</span>
               <span className="text-sm font-medium">{relay.total_tunnels}</span>
             </div>
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Bandwidth In</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.bandwidthIn')}</span>
               <span className="text-sm text-muted-foreground">{formatBytes(relay.bandwidth_in)}</span>
             </div>
             <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <span className="text-sm font-medium">Bandwidth Out</span>
+              <span className="text-sm font-medium">{t('relayNodeDetail.bandwidthOut')}</span>
               <span className="text-sm text-muted-foreground">{formatBytes(relay.bandwidth_out)}</span>
             </div>
           </CardContent>
@@ -147,7 +149,7 @@ export default function RelayNodeDetail() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Traffic History</CardTitle>
+          <CardTitle>{t('relayNodeDetail.trafficHistory')}</CardTitle>
         </CardHeader>
         <CardContent>
           <Suspense fallback={<Skeleton className="h-64 w-full" />}>

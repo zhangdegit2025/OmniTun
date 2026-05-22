@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api'
 import type { Announcement } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -27,6 +28,7 @@ const targetLabels: Record<string, string> = {
 
 export default function Announcements() {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<Announcement | null>(null)
   const [form, setForm] = useState({
@@ -110,40 +112,40 @@ export default function Announcements() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Announcements</h1>
-          <p className="text-sm text-muted-foreground">Manage system-wide announcements for user dashboards</p>
+          <h1 className="text-2xl font-bold">{t('announcements.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('announcements.subtitle')}</p>
         </div>
         <Button size="sm" onClick={() => { resetForm(); setShowForm(true) }}>
           <Plus className="mr-2 h-4 w-4" />
-          New Announcement
+          {t('announcements.newAnnouncement')}
         </Button>
       </div>
 
       {showForm && (
         <Card>
           <CardHeader>
-            <CardTitle>{editing ? 'Edit Announcement' : 'Create Announcement'}</CardTitle>
+            <CardTitle>{editing ? t('announcements.editAnnouncement') : t('announcements.createAnnouncement')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
               <Input
-                label="Title"
+                label={t('announcements.title_field')}
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                placeholder="Announcement title"
+                placeholder={t('announcements.titlePlaceholder')}
               />
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-foreground">Body (Markdown)</label>
+                <label className="text-sm font-medium text-foreground">{t('announcements.body')}</label>
                 <textarea
                   className="flex min-h-[120px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   value={form.body}
                   onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
-                  placeholder="Markdown content..."
+                  placeholder={t('announcements.bodyPlaceholder')}
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-foreground">Severity</label>
+                  <label className="text-sm font-medium text-foreground">{t('announcements.severity')}</label>
                   <select
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     value={form.severity}
@@ -155,13 +157,13 @@ export default function Announcements() {
                   </select>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-foreground">Target Plan</label>
+                  <label className="text-sm font-medium text-foreground">{t('announcements.targetPlan')}</label>
                   <select
                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     value={form.target}
                     onChange={(e) => setForm((f) => ({ ...f, target: e.target.value }))}
                   >
-                    <option value="all">All Plans</option>
+                    <option value="all">{t('announcements.allPlans')}</option>
                     <option value="free">Free</option>
                     <option value="pro">Pro</option>
                     <option value="team">Team</option>
@@ -172,13 +174,13 @@ export default function Announcements() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Input
-                  label="Start At"
+                  label={t('announcements.startAt')}
                   type="datetime-local"
                   value={form.start_at}
                   onChange={(e) => setForm((f) => ({ ...f, start_at: e.target.value }))}
                 />
                 <Input
-                  label="End At"
+                  label={t('announcements.endAt')}
                   type="datetime-local"
                   value={form.end_at}
                   onChange={(e) => setForm((f) => ({ ...f, end_at: e.target.value }))}
@@ -193,22 +195,22 @@ export default function Announcements() {
                   className="h-4 w-4 rounded border-input"
                 />
                 <label htmlFor="active-toggle" className="text-sm font-medium text-foreground">
-                  Active
+                  {t('announcements.active')}
                 </label>
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
-                  {editing ? 'Update' : 'Create'}
+                  {editing ? t('common.update') : t('common.create')}
                 </Button>
                 <Button variant="outline" onClick={resetForm}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
               </div>
               {(createMutation.isError || updateMutation.isError) && (
                 <Badge variant="destructive" className="w-full justify-center py-1.5">
                   {(createMutation.error as { message?: string })?.message ??
                     (updateMutation.error as { message?: string })?.message ??
-                    'Operation failed'}
+                    t('announcements.operationFailed')}
                 </Badge>
               )}
             </div>
@@ -219,7 +221,7 @@ export default function Announcements() {
       <Card>
         <CardHeader>
           <CardTitle>
-            All Announcements
+            {t('announcements.allAnnouncements')}
             {data?.announcements && (
               <span className="text-sm font-normal text-muted-foreground">
                 ({data.announcements.length})
@@ -231,22 +233,22 @@ export default function Announcements() {
           {listQuery.isError ? (
             <div className="flex flex-col items-center gap-2 rounded-lg border border-destructive/50 p-6 text-center">
               <AlertCircle className="h-8 w-8 text-destructive" />
-              <p className="text-sm text-destructive">Failed to load announcements</p>
+              <p className="text-sm text-destructive">{t('announcements.failedToLoad')}</p>
               <Button variant="outline" size="sm" onClick={() => listQuery.refetch()}>
-                Retry
+                {t('common.retry')}
               </Button>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Severity</TableHead>
-                  <TableHead>Target</TableHead>
-                  <TableHead>Active</TableHead>
-                  <TableHead>Schedule</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="w-[100px]">Actions</TableHead>
+                  <TableHead>{t('announcements.title_field')}</TableHead>
+                  <TableHead>{t('announcements.severity')}</TableHead>
+                  <TableHead>{t('announcements.targetPlan')}</TableHead>
+                  <TableHead>{t('announcements.active')}</TableHead>
+                  <TableHead>{t('announcements.schedule')}</TableHead>
+                  <TableHead>{t('common.created')}</TableHead>
+                  <TableHead className="w-[100px]">{t('common.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -275,18 +277,18 @@ export default function Announcements() {
                         </TableCell>
                         <TableCell>
                           <Badge variant={a.active ? 'success' : 'secondary'}>
-                            {a.active ? 'Active' : 'Inactive'}
+                            {a.active ? t('common.active') : t('common.inactive')}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
                           {a.start_at || a.end_at ? (
                             <>
-                              {a.start_at ? new Date(a.start_at).toLocaleDateString() : 'Now'}
+                              {a.start_at ? new Date(a.start_at).toLocaleDateString() : t('announcements.now')}
                               {' \u2013 '}
-                              {a.end_at ? new Date(a.end_at).toLocaleDateString() : 'Forever'}
+                              {a.end_at ? new Date(a.end_at).toLocaleDateString() : t('announcements.forever')}
                             </>
                           ) : (
-                            'Always'
+                            t('announcements.always')
                           )}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
@@ -301,7 +303,7 @@ export default function Announcements() {
                               variant="ghost"
                               size="sm"
                               onClick={() => {
-                                if (window.confirm('Delete this announcement?')) {
+                                if (window.confirm(t('announcements.deleteConfirm'))) {
                                   deleteMutation.mutate(a.id)
                                 }
                               }}
@@ -319,7 +321,7 @@ export default function Announcements() {
           {data?.announcements && data.announcements.length === 0 && !showSkeleton && (
             <div className="py-8 text-center text-sm text-muted-foreground">
               <Megaphone className="mx-auto mb-2 h-6 w-6" />
-              No announcements created yet
+              {t('announcements.noAnnouncements')}
             </div>
           )}
         </CardContent>

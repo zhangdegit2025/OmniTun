@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -7,6 +8,7 @@ import { ArrowLeft, Building2, Users, Server, BarChart3 } from 'lucide-react'
 
 export default function OrganizationDetail() {
   const { id } = useParams()
+  const { t } = useTranslation()
 
   const org = {
     id: id ?? '1',
@@ -43,18 +45,18 @@ export default function OrganizationDetail() {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
           <ArrowLeft className="mr-1 h-4 w-4" />
-          Back
+          {t('organizationDetail.back')}
         </Button>
         <div>
           <h1 className="text-2xl font-bold">{org.name}</h1>
-          <p className="text-sm text-muted-foreground">Organization #{org.id}</p>
+          <p className="text-sm text-muted-foreground">{t('organizationDetail.organization', { id: org.id })}</p>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Status</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('organizationDetail.status')}</CardTitle>
             <Building2 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -63,7 +65,7 @@ export default function OrganizationDetail() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Users</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('organizationDetail.users')}</CardTitle>
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -72,7 +74,7 @@ export default function OrganizationDetail() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Tunnels</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('organizationDetail.tunnels')}</CardTitle>
             <Server className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -81,7 +83,7 @@ export default function OrganizationDetail() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Bandwidth</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('organizationDetail.bandwidth')}</CardTitle>
             <BarChart3 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -95,15 +97,15 @@ export default function OrganizationDetail() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Users</CardTitle>
+            <CardTitle>{t('organizationDetail.users')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t('organizationDetail.status')}</TableHead>
+                  <TableHead>{t('organizationDetail.role')}</TableHead>
+                  <TableHead>{t('organizationDetail.status')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -124,16 +126,16 @@ export default function OrganizationDetail() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Tunnels</CardTitle>
+            <CardTitle>{t('organizationDetail.tunnels')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Protocol</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Traffic</TableHead>
+                  <TableHead>{t('common.name')}</TableHead>
+                  <TableHead>{t('organizationDetail.protocol')}</TableHead>
+                  <TableHead>{t('organizationDetail.status')}</TableHead>
+                  <TableHead>{t('organizationDetail.traffic')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

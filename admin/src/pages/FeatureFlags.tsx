@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -27,6 +28,7 @@ const typeVariant: Record<string, 'success' | 'warning' | 'default'> = {
 }
 
 export default function FeatureFlags() {
+  const { t } = useTranslation()
   const [flags, setFlags] = useState<Flag[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -129,7 +131,7 @@ export default function FeatureFlags() {
   }
 
   async function handleDelete(flag: Flag) {
-    if (!confirm(`Delete flag "${flag.name}"?`)) return
+    if (!confirm(t('featureFlags.deleteConfirm', { name: flag.name }))) return
     try {
       await apiRequest(`/api/admin/v1/feature-flags/${encodeURIComponent(flag.key)}`, {
         method: 'DELETE',
@@ -143,12 +145,12 @@ export default function FeatureFlags() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Feature Flags</h1>
-          <p className="text-sm text-muted-foreground">{flags.length} flags configured</p>
+          <h1 className="text-2xl font-bold">{t('featureFlags.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('featureFlags.subtitle', { count: flags.length })}</p>
         </div>
         <Button onClick={openCreate}>
           <Plus className="mr-1 h-4 w-4" />
-          New Flag
+          {t('featureFlags.newFlag')}
         </Button>
       </div>
 
@@ -164,11 +166,11 @@ export default function FeatureFlags() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Key</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-[120px]">Actions</TableHead>
+                  <TableHead>{t('featureFlags.key')}</TableHead>
+                  <TableHead>{t('featureFlags.name')}</TableHead>
+                  <TableHead>{t('featureFlags.type')}</TableHead>
+                  <TableHead>{t('common.status')}</TableHead>
+                  <TableHead className="w-[120px]">{t('featureFlags.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -176,7 +178,7 @@ export default function FeatureFlags() {
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                       <Flag className="mx-auto mb-2 h-8 w-8 opacity-20" />
-                      No feature flags configured yet
+                      {t('featureFlags.noFlags')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -230,30 +232,30 @@ export default function FeatureFlags() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-lg rounded-lg border bg-card shadow-lg">
             <CardHeader>
-              <CardTitle>{editing ? 'Edit Feature Flag' : 'Create Feature Flag'}</CardTitle>
+              <CardTitle>{editing ? t('featureFlags.editFlag') : t('featureFlags.createFlag')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Input
-                label="Key"
-                placeholder="e.g. p2p_enabled"
+                label={t('featureFlags.key')}
+                placeholder={t('featureFlags.keyPlaceholder')}
                 value={formKey}
                 onChange={(e) => setFormKey(e.target.value)}
                 disabled={!!editing}
               />
               <Input
-                label="Name"
-                placeholder="Display name"
+                label={t('featureFlags.name')}
+                placeholder={t('featureFlags.namePlaceholder')}
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
               />
               <Input
-                label="Description"
-                placeholder="Brief description"
+                label={t('featureFlags.description')}
+                placeholder={t('featureFlags.descriptionPlaceholder')}
                 value={formDesc}
                 onChange={(e) => setFormDesc(e.target.value)}
               />
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-foreground">Type</label>
+                <label className="text-sm font-medium text-foreground">{t('featureFlags.type')}</label>
                 <select
                   value={formType}
                   onChange={(e) => {
@@ -264,13 +266,13 @@ export default function FeatureFlags() {
                   }}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 >
-                  <option value="boolean">Boolean</option>
-                  <option value="percentage">Percentage</option>
-                  <option value="whitelist">Whitelist</option>
+                  <option value="boolean">{t('featureFlags.boolean')}</option>
+                  <option value="percentage">{t('featureFlags.percentage')}</option>
+                  <option value="whitelist">{t('featureFlags.whitelist')}</option>
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-foreground">Value (JSON)</label>
+                <label className="text-sm font-medium text-foreground">{t('featureFlags.value')}</label>
                 <textarea
                   value={formValue}
                   onChange={(e) => setFormValue(e.target.value)}
@@ -279,7 +281,7 @@ export default function FeatureFlags() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Enabled</span>
+                <span className="text-sm font-medium">{t('common.enabled')}</span>
                 <button
                   type="button"
                   onClick={() => setFormEnabled(!formEnabled)}
@@ -296,10 +298,10 @@ export default function FeatureFlags() {
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button onClick={handleSave} disabled={saving}>
-                  {saving ? 'Saving...' : 'Save'}
+                  {saving ? t('common.saving') : t('common.save')}
                 </Button>
               </div>
             </CardContent>

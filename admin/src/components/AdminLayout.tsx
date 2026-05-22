@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
+import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard,
   Building2,
@@ -13,6 +14,13 @@ import {
   FileText,
   Megaphone,
   Key,
+  Receipt,
+  DollarSign,
+  Percent,
+  Globe,
+  Trash2,
+  BarChart3,
+  ScrollText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -20,15 +28,25 @@ export default function AdminLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { t } = useTranslation()
 
   const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/organizations', label: 'Organizations', icon: Building2 },
-    { to: '/users', label: 'Users', icon: Users },
-    { to: '/relays', label: 'Relay Nodes', icon: Server },
-    { to: '/audit-logs', label: 'Audit Logs', icon: FileText },
-    { to: '/announcements', label: 'Announcements', icon: Megaphone },
-    { to: '/certificates', label: 'Certificates', icon: Key },
+    { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/organizations', label: t('nav.organizations'), icon: Building2 },
+    { to: '/users', label: t('nav.users'), icon: Users },
+    { to: '/relays', label: t('nav.relayNodes'), icon: Server },
+    { to: '/audit-logs', label: t('nav.auditLogs'), icon: FileText },
+    { to: '/announcements', label: t('nav.announcements'), icon: Megaphone },
+    { to: '/certificates', label: t('nav.certificates'), icon: Key },
+    { to: '/revenue', label: t('nav.revenue'), icon: DollarSign },
+    { to: '/invoices', label: t('nav.invoices'), icon: Receipt },
+    { to: '/pricing', label: t('nav.pricing'), icon: DollarSign },
+    { to: '/discounts', label: t('nav.discounts'), icon: Percent },
+    { to: '/ip-whitelist', label: t('nav.ipWhitelist'), icon: Globe },
+    { to: '/data-retention', label: t('nav.dataRetention'), icon: Trash2 },
+    { to: '/sla', label: t('nav.slaDashboard'), icon: BarChart3 },
+    { to: '/audit-reports', label: t('nav.auditReports'), icon: ScrollText },
+    { to: '/roles', label: t('nav.roles'), icon: Shield },
   ]
 
   return (
@@ -48,7 +66,7 @@ export default function AdminLayout() {
       >
         <div className="flex h-14 items-center gap-2 border-b border-border px-4">
           <Shield className="h-6 w-6 text-primary" />
-          <span className="text-lg font-bold">OmniTun Admin</span>
+          <span className="text-lg font-bold">{t('nav.omniTunAdmin')}</span>
         </div>
 
         <nav className="flex-1 space-y-1 p-3">
@@ -103,7 +121,7 @@ export default function AdminLayout() {
           </span>
           <Button variant="outline" size="sm" onClick={logout}>
             <LogOut className="mr-1 h-4 w-4" />
-            Sign Out
+            {t('nav.signOut')}
           </Button>
         </header>
 

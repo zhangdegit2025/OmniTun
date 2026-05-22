@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
@@ -15,12 +16,13 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [validation, setValidation] = useState<{ email?: string; password?: string }>({})
+  const { t } = useTranslation()
 
   const validate = (): boolean => {
     const errs: { email?: string; password?: string } = {}
-    if (!email.trim()) errs.email = 'Email is required'
-    else if (!EMAIL_RE.test(email)) errs.email = 'Invalid email address'
-    if (!password.trim()) errs.password = 'Password is required'
+    if (!email.trim()) errs.email = t('auth.login.emailRequired')
+    else if (!EMAIL_RE.test(email)) errs.email = t('auth.login.invalidEmail')
+    if (!password.trim()) errs.password = t('auth.login.passwordRequired')
     setValidation(errs)
     return Object.keys(errs).length === 0
   }
@@ -45,17 +47,17 @@ export default function Login() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/20">
             <Shield className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle className="text-2xl text-white">Admin Console</CardTitle>
+          <CardTitle className="text-2xl text-white">{t('auth.login.title')}</CardTitle>
           <CardDescription className="text-slate-400">
-            Sign in to manage OmniTun
+            {t('auth.login.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <Input
-              label="Email"
+              label={t('auth.login.email')}
               type="email"
-              placeholder="admin@omnitun.io"
+              placeholder={t('auth.login.emailPlaceholder')}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
@@ -65,9 +67,9 @@ export default function Login() {
               error={validation.email}
             />
             <Input
-              label="Password"
+              label={t('auth.login.password')}
               type="password"
-              placeholder="Enter your password"
+              placeholder={t('auth.login.passwordPlaceholder')}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value)
@@ -85,10 +87,10 @@ export default function Login() {
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in...
+                  {t('auth.login.signingIn')}
                 </>
               ) : (
-                'Sign In'
+                t('auth.login.signIn')
               )}
             </Button>
           </form>

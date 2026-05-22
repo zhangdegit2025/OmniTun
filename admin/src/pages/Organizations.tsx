@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -39,6 +40,7 @@ const planVariant: Record<string, 'default' | 'success' | 'secondary'> = {
 }
 
 export default function Organizations() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
 
   const filtered = mockOrgs.filter(
@@ -51,19 +53,19 @@ export default function Organizations() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Organizations</h1>
-          <p className="text-sm text-muted-foreground">Manage all tenant organizations</p>
+          <h1 className="text-2xl font-bold">{t('organizations.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('organizations.subtitle')}</p>
         </div>
         <Button>
           <Plus className="mr-1 h-4 w-4" />
-          New Organization
+          {t('organizations.newOrg')}
         </Button>
       </div>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search organizations..."
+          placeholder={t('organizations.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -75,12 +77,12 @@ export default function Organizations() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Plan</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Tunnels</TableHead>
-                <TableHead>Users</TableHead>
-                <TableHead>Created</TableHead>
+                <TableHead>{t('organizations.name')}</TableHead>
+                <TableHead>{t('organizations.plan')}</TableHead>
+                <TableHead>{t('organizations.status')}</TableHead>
+                <TableHead>{t('organizations.tunnels')}</TableHead>
+                <TableHead>{t('organizations.users')}</TableHead>
+                <TableHead>{t('organizations.created')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

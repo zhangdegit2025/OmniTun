@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
@@ -26,6 +27,7 @@ const mockUsers: UserRow[] = [
 ]
 
 export default function Users() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
 
   const filtered = mockUsers.filter(
@@ -38,14 +40,14 @@ export default function Users() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold">Users</h1>
-        <p className="text-sm text-muted-foreground">Global user management across all organizations</p>
+        <h1 className="text-2xl font-bold">{t('users.title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('users.subtitle')}</p>
       </div>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search users..."
+          placeholder={t('users.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -57,12 +59,12 @@ export default function Users() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Organization</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Login</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableHead>{t('users.user')}</TableHead>
+                <TableHead>{t('users.organization')}</TableHead>
+                <TableHead>{t('users.role')}</TableHead>
+                <TableHead>{t('users.status')}</TableHead>
+                <TableHead>{t('users.lastLogin')}</TableHead>
+                <TableHead>{t('users.joined')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -84,7 +86,7 @@ export default function Users() {
                   <TableCell className="text-muted-foreground">
                     {user.last_login_at
                       ? new Date(user.last_login_at).toLocaleString()
-                      : 'Never'}
+                      : t('users.never')}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(user.created_at).toLocaleDateString()}

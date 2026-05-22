@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
@@ -34,6 +35,7 @@ const statusVariant: Record<string, 'success' | 'destructive' | 'warning'> = {
 }
 
 export default function RelayNodes() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
 
   const filtered = mockRelays.filter(
@@ -48,16 +50,16 @@ export default function RelayNodes() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold">Relay Nodes</h1>
+        <h1 className="text-2xl font-bold">{t('relayNodes.title')}</h1>
         <p className="text-sm text-muted-foreground">
-          {onlineCount} of {mockRelays.length} nodes online
+          {t('relayNodes.nodesOnline', { online: onlineCount, total: mockRelays.length })}
         </p>
       </div>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search relay nodes..."
+          placeholder={t('relayNodes.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -69,14 +71,14 @@ export default function RelayNodes() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Region</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Version</TableHead>
-                <TableHead>CPU</TableHead>
-                <TableHead>Memory</TableHead>
-                <TableHead>Connections</TableHead>
-                <TableHead>Last Seen</TableHead>
+                <TableHead>{t('relayNodes.name')}</TableHead>
+                <TableHead>{t('relayNodes.region')}</TableHead>
+                <TableHead>{t('relayNodes.status')}</TableHead>
+                <TableHead>{t('relayNodes.version')}</TableHead>
+                <TableHead>{t('relayNodes.cpu')}</TableHead>
+                <TableHead>{t('relayNodes.memory')}</TableHead>
+                <TableHead>{t('relayNodes.connections')}</TableHead>
+                <TableHead>{t('relayNodes.lastSeen')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

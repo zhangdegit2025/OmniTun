@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api'
 import type { SystemCertificate, TenantCertificate } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -14,6 +15,7 @@ type Tab = 'system' | 'tenants'
 export default function Certificates() {
   const queryClient = useQueryClient()
   const [tab, setTab] = useState<Tab>('system')
+  const { t } = useTranslation()
 
   const systemQuery = useQuery<{ certificates: SystemCertificate[] }>({
     queryKey: ['admin', 'certificates', 'system'],
@@ -50,11 +52,11 @@ export default function Certificates() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'valid':
-        return <Badge variant="success">Valid</Badge>
+        return <Badge variant="success">{t('certificates.valid')}</Badge>
       case 'expiring_soon':
-        return <Badge variant="warning">Expiring Soon</Badge>
+        return <Badge variant="warning">{t('certificates.expiringSoon')}</Badge>
       case 'expired':
-        return <Badge variant="destructive">Expired</Badge>
+        return <Badge variant="destructive">{t('certificates.expired')}</Badge>
       default:
         return <Badge variant="secondary">{status}</Badge>
     }
@@ -69,8 +71,8 @@ export default function Certificates() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold">Certificate Management</h1>
-        <p className="text-sm text-muted-foreground">Monitor and manage TLS certificates</p>
+        <h1 className="text-2xl font-bold">{t('certificates.title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('certificates.subtitle')}</p>
       </div>
 
       <div className="flex gap-2 border-b border-border">
@@ -80,7 +82,7 @@ export default function Certificates() {
           onClick={() => setTab('system')}
           className="rounded-b-none"
         >
-          System Certs
+          {t('certificates.systemCerts')}
         </Button>
         <Button
           variant={tab === 'tenants' ? 'default' : 'ghost'}
@@ -88,14 +90,14 @@ export default function Certificates() {
           onClick={() => setTab('tenants')}
           className="rounded-b-none"
         >
-          Tenant Certs
+          {t('certificates.tenantCerts')}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>
-            {tab === 'system' ? 'System Certificates' : 'Tenant Certificates'}
+            {tab === 'system' ? t('certificates.systemCertificates') : t('certificates.tenantCertificates')}
             {activeQuery.isSuccess && (
               <span className="text-sm font-normal text-muted-foreground">({data.length})</span>
             )}
@@ -105,23 +107,23 @@ export default function Certificates() {
           {activeQuery.isError ? (
             <div className="flex flex-col items-center gap-2 rounded-lg border border-destructive/50 p-6 text-center">
               <AlertCircle className="h-8 w-8 text-destructive" />
-              <p className="text-sm text-destructive">Failed to load certificates</p>
+              <p className="text-sm text-destructive">{t('certificates.failedToLoad')}</p>
               <Button variant="outline" size="sm" onClick={() => activeQuery.refetch()}>
-                Retry
+                {t('common.retry')}
               </Button>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Domain</TableHead>
-                  {tab === 'tenants' && <TableHead>Organization</TableHead>}
-                  <TableHead>Issuer</TableHead>
-                  <TableHead>Expires</TableHead>
-                  <TableHead>Days Left</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Auto Renew</TableHead>
-                  <TableHead className="w-[140px]">Actions</TableHead>
+                  <TableHead>{t('certificates.domain')}</TableHead>
+                  {tab === 'tenants' && <TableHead>{t('certificates.organization')}</TableHead>}
+                  <TableHead>{t('certificates.issuer')}</TableHead>
+                  <TableHead>{t('common.expires')}</TableHead>
+                  <TableHead>{t('certificates.daysLeft')}</TableHead>
+                  <TableHead>{t('certificates.status')}</TableHead>
+                  <TableHead>{t('certificates.autoRenew')}</TableHead>
+                  <TableHead className="w-[140px]">{t('certificates.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -142,7 +144,7 @@ export default function Certificates() {
                     <TableRow>
                       <TableCell colSpan={tab === 'tenants' ? 8 : 7} className="py-8 text-center text-muted-foreground">
                         <Shield className="mx-auto mb-2 h-6 w-6" />
-                        No certificates found
+                        {t('certificates.noCertificates')}
                       </TableCell>
                     </TableRow>
                   ) : tab === 'system' ? (
@@ -161,7 +163,7 @@ export default function Certificates() {
                         <TableCell>{getStatusBadge(cert.status)}</TableCell>
                         <TableCell>
                           <Badge variant={cert.auto_renew ? 'success' : 'secondary'}>
-                            {cert.auto_renew ? 'Yes' : 'No'}
+                            {cert.auto_renew ? t('common.yes') : t('common.no')}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -173,13 +175,13 @@ export default function Certificates() {
                               disabled={renewMutation.isPending}
                             >
                               <RefreshCw className="mr-1 h-3.5 w-3.5" />
-                              Renew
+                              {t('certificates.renew')}
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => {
-                                if (window.confirm(`Revoke certificate for ${cert.domain}?`)) {
+                                if (window.confirm(t('certificates.revokeConfirm', { domain: cert.domain }))) {
                                   revokeMutation.mutate(cert.id)
                                 }
                               }}
@@ -208,7 +210,7 @@ export default function Certificates() {
                         <TableCell>{getStatusBadge(cert.status)}</TableCell>
                         <TableCell>
                           <Badge variant={cert.auto_renew ? 'success' : 'secondary'}>
-                            {cert.auto_renew ? 'Yes' : 'No'}
+                            {cert.auto_renew ? t('common.yes') : t('common.no')}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -220,13 +222,13 @@ export default function Certificates() {
                               disabled={renewMutation.isPending}
                             >
                               <RefreshCw className="mr-1 h-3.5 w-3.5" />
-                              Renew
+                              {t('certificates.renew')}
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => {
-                                if (window.confirm(`Revoke certificate for ${cert.domain}?`)) {
+                                if (window.confirm(t('certificates.revokeConfirm', { domain: cert.domain }))) {
                                   revokeMutation.mutate(cert.id)
                                 }
                               }}

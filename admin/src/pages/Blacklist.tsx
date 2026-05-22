@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -23,6 +24,7 @@ export default function Blacklist() {
   const [newCidr, setNewCidr] = useState('')
   const [newReason, setNewReason] = useState('')
   const [addError, setAddError] = useState('')
+  const { t } = useTranslation()
 
   const blacklistQuery = useQuery<{ entries: BlacklistEntry[] }>({
     queryKey: ['admin', 'abuse', 'blacklist'],
@@ -42,7 +44,7 @@ export default function Blacklist() {
       setAddError('')
     },
     onError: (err: { message?: string }) => {
-      setAddError(err.message ?? 'Failed to add entry')
+      setAddError(err.message ?? t('blacklist.cidrRequired'))
     },
   })
 
@@ -58,7 +60,7 @@ export default function Blacklist() {
 
   const handleAdd = () => {
     if (!newCidr.trim()) {
-      setAddError('CIDR is required')
+      setAddError(t('blacklist.cidrRequired'))
       return
     }
     addMutation.mutate({
@@ -80,8 +82,8 @@ export default function Blacklist() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">IP Blacklist</h1>
-          <p className="text-sm text-muted-foreground">Manage blocked IP addresses and CIDR ranges</p>
+          <h1 className="text-2xl font-bold">{t('blacklist.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('blacklist.subtitle')}</p>
         </div>
         <ShieldBan className="h-8 w-8 text-destructive" />
       </div>
@@ -91,8 +93,8 @@ export default function Blacklist() {
           <div className="flex items-end gap-3">
             <div className="flex-1">
               <Input
-                label="CIDR"
-                placeholder="e.g. 192.168.0.0/24 or 10.0.0.1/32"
+                label={t('blacklist.cidr')}
+                placeholder={t('blacklist.cidrPlaceholder')}
                 value={newCidr}
                 onChange={(e) => {
                   setNewCidr(e.target.value)
@@ -103,8 +105,8 @@ export default function Blacklist() {
             </div>
             <div className="flex-1">
               <Input
-                label="Reason"
-                placeholder="e.g. DDoS attack, spam"
+                label={t('blacklist.reason')}
+                placeholder={t('blacklist.reasonPlaceholder')}
                 value={newReason}
                 onChange={(e) => setNewReason(e.target.value)}
               />
@@ -115,7 +117,7 @@ export default function Blacklist() {
               className="h-9"
             >
               <Plus className="mr-1 h-4 w-4" />
-              {addMutation.isPending ? 'Adding...' : 'Add'}
+              {addMutation.isPending ? t('blacklist.adding') : t('blacklist.add')}
             </Button>
           </div>
         </CardContent>
@@ -126,19 +128,19 @@ export default function Blacklist() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>CIDR</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>Added By</TableHead>
-                <TableHead>Added At</TableHead>
-                <TableHead>Expires</TableHead>
-                <TableHead className="w-[80px]">Actions</TableHead>
+                <TableHead>{t('blacklist.cidr')}</TableHead>
+                <TableHead>{t('blacklist.reason')}</TableHead>
+                <TableHead>{t('blacklist.addedBy')}</TableHead>
+                <TableHead>{t('blacklist.addedAt')}</TableHead>
+                <TableHead>{t('blacklist.expires')}</TableHead>
+                <TableHead className="w-[80px]">{t('blacklist.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {entries.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                    No blacklist entries. Add a CIDR to start blocking.
+                    {t('blacklist.noEntries')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -155,7 +157,7 @@ export default function Blacklist() {
                       {new Date(entry.created_at).toLocaleString()}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {entry.expires_at ? new Date(entry.expires_at).toLocaleString() : 'Never'}
+                      {entry.expires_at ? new Date(entry.expires_at).toLocaleString() : t('common.never')}
                     </TableCell>
                     <TableCell>
                       <Button

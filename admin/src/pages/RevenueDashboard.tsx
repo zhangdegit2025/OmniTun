@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api'
 import type { MRRData, ChurnData, FunnelData } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -31,6 +32,7 @@ function formatPercent(val: number): string {
 }
 
 export default function RevenueDashboard() {
+  const { t } = useTranslation()
   const mrrQuery = useQuery<MRRData>({
     queryKey: ['admin', 'revenue', 'mrr'],
     queryFn: () => apiRequest<MRRData>('/api/admin/v1/revenue/mrr'),
@@ -56,9 +58,9 @@ export default function RevenueDashboard() {
     return (
       <div className="flex flex-col items-center gap-2 rounded-lg border border-destructive/50 p-6 text-center">
         <AlertCircle className="h-8 w-8 text-destructive" />
-        <p className="text-sm text-destructive">Failed to load revenue data</p>
+        <p className="text-sm text-destructive">{t('revenue.failedToLoad')}</p>
         <Button variant="outline" size="sm" onClick={() => { mrrQuery.refetch(); churnQuery.refetch(); funnelQuery.refetch() }}>
-          Retry
+          {t('common.retry')}
         </Button>
       </div>
     )
@@ -67,8 +69,8 @@ export default function RevenueDashboard() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold">Revenue Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Revenue metrics, trends, and forecasting</p>
+        <h1 className="text-2xl font-bold">{t('revenue.title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('revenue.subtitle')}</p>
       </div>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -83,7 +85,7 @@ export default function RevenueDashboard() {
           <>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">MRR</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">{t('revenue.mrr')}</CardTitle>
                 <DollarSign className="h-4 w-4 text-emerald-500" />
               </CardHeader>
               <CardContent>
@@ -97,7 +99,7 @@ export default function RevenueDashboard() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">ARR</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">{t('revenue.arr')}</CardTitle>
                 <DollarSign className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent>
@@ -106,7 +108,7 @@ export default function RevenueDashboard() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Active Subscriptions</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">{t('revenue.activeSubscriptions')}</CardTitle>
                 <Users className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
@@ -120,7 +122,7 @@ export default function RevenueDashboard() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Churn Rate</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">{t('revenue.churnRate')}</CardTitle>
                 <Percent className="h-4 w-4 text-amber-500" />
               </CardHeader>
               <CardContent>
@@ -139,7 +141,7 @@ export default function RevenueDashboard() {
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>MRR Trend Breakdown</CardTitle>
+            <CardTitle>{t('revenue.mrrTrendBreakdown')}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -168,7 +170,7 @@ export default function RevenueDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Revenue Forecast</CardTitle>
+            <CardTitle>{t('revenue.revenueForecast')}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -176,10 +178,10 @@ export default function RevenueDashboard() {
             ) : (
               <div className="space-y-4">
                 {[
-                  { label: '30 Day', value: mrrData?.forecast.days_30 ?? 0 },
-                  { label: '60 Day', value: mrrData?.forecast.days_60 ?? 0 },
-                  { label: '90 Day', value: mrrData?.forecast.days_90 ?? 0 },
-                ].map((item, i) => (
+                  { label: t('revenue.days30'), value: mrrData?.forecast.days_30 ?? 0 },
+                  { label: t('revenue.days60'), value: mrrData?.forecast.days_60 ?? 0 },
+                  { label: t('revenue.days90'), value: mrrData?.forecast.days_90 ?? 0 },
+                ].map((item) => (
                   <div key={item.label} className="flex items-center gap-4">
                     <span className="w-20 text-sm font-medium text-muted-foreground">{item.label}</span>
                     <div className="flex-1">
@@ -194,7 +196,7 @@ export default function RevenueDashboard() {
                   </div>
                 ))}
                 <div className="flex items-center gap-4 pt-2">
-                  <span className="w-20 text-sm font-medium text-muted-foreground">Current</span>
+                  <span className="w-20 text-sm font-medium text-muted-foreground">{t('revenue.current')}</span>
                   <div className="flex-1">
                     <div className="h-8 rounded-md bg-muted overflow-hidden">
                       <div
@@ -214,7 +216,7 @@ export default function RevenueDashboard() {
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Conversion Funnel</CardTitle>
+            <CardTitle>{t('revenue.conversionFunnel')}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -226,7 +228,7 @@ export default function RevenueDashboard() {
                   <XAxis type="number" className="text-xs" />
                   <YAxis dataKey="name" type="category" className="text-xs" width={80} />
                   <Tooltip
-                    formatter={(value: number) => [value.toLocaleString(), 'Count']}
+                    formatter={(value: number) => [value.toLocaleString(), t('revenue.count')]}
                     contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
                   />
                   <Bar dataKey="count" name="Users" radius={[0, 4, 4, 0]}>
@@ -242,7 +244,7 @@ export default function RevenueDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Churn Metrics</CardTitle>
+            <CardTitle>{t('revenue.churnMetrics')}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -251,19 +253,19 @@ export default function RevenueDashboard() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-lg border border-border p-4">
-                    <p className="text-xs text-muted-foreground">Voluntary Churn</p>
+                    <p className="text-xs text-muted-foreground">{t('revenue.voluntaryChurn')}</p>
                     <p className="text-xl font-bold text-destructive">{formatPercent(churnData?.voluntary_churn ?? 0)}</p>
                   </div>
                   <div className="rounded-lg border border-border p-4">
-                    <p className="text-xs text-muted-foreground">Involuntary Churn</p>
+                    <p className="text-xs text-muted-foreground">{t('revenue.involuntaryChurn')}</p>
                     <p className="text-xl font-bold text-amber-500">{formatPercent(churnData?.involuntary_churn ?? 0)}</p>
                   </div>
                   <div className="rounded-lg border border-border p-4">
-                    <p className="text-xs text-muted-foreground">Retention Rate</p>
+                    <p className="text-xs text-muted-foreground">{t('revenue.retentionRate')}</p>
                     <p className="text-xl font-bold text-emerald-500">{formatPercent(churnData?.retention_rate ?? 0)}</p>
                   </div>
                   <div className="rounded-lg border border-border p-4">
-                    <p className="text-xs text-muted-foreground">At-Risk Customers</p>
+                    <p className="text-xs text-muted-foreground">{t('revenue.atRiskCustomers')}</p>
                     <p className="text-xl font-bold text-amber-500">{churnData?.at_risk_customers ?? 0}</p>
                   </div>
                 </div>

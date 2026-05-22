@@ -65,6 +65,16 @@ func validateSuperAdminToken(tokenString, secret string) (jwt.MapClaims, error) 
 	return claims, nil
 }
 
+func GetAdminID(ctx context.Context) (string, bool) {
+	id, ok := ctx.Value(contextKey("admin_id")).(string)
+	return id, ok
+}
+
+func GetAdminRole(ctx context.Context) (string, bool) {
+	role, ok := ctx.Value(contextKey("admin_role")).(string)
+	return role, ok
+}
+
 func extractAdminToken(r *http.Request) string {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -32,6 +33,7 @@ const statusBadge: Record<string, 'warning' | 'default' | 'success' | 'destructi
 export default function AbuseReports() {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
+  const { t } = useTranslation()
 
   const reportsQuery = useQuery<{ reports: AbuseReport[]; total: number }>({
     queryKey: ['admin', 'abuse', 'reports'],
@@ -79,8 +81,8 @@ export default function AbuseReports() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Abuse Reports</h1>
-          <p className="text-sm text-muted-foreground">Review and manage reported abuse incidents</p>
+          <h1 className="text-2xl font-bold">{t('abuseReports.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('abuseReports.subtitle')}</p>
         </div>
         <AlertTriangle className="h-8 w-8 text-amber-500" />
       </div>
@@ -88,7 +90,7 @@ export default function AbuseReports() {
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search reports..."
+          placeholder={t('abuseReports.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -100,20 +102,20 @@ export default function AbuseReports() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Report ID</TableHead>
-                <TableHead>Org</TableHead>
-                <TableHead>Tunnel</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t('abuseReports.reportId')}</TableHead>
+                <TableHead>{t('abuseReports.org')}</TableHead>
+                <TableHead>{t('abuseReports.tunnel')}</TableHead>
+                <TableHead>{t('abuseReports.reason')}</TableHead>
+                <TableHead>{t('abuseReports.status')}</TableHead>
+                <TableHead>{t('common.created')}</TableHead>
+                <TableHead>{t('abuseReports.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-                    No abuse reports found
+                    {t('abuseReports.noReports')}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -157,7 +159,7 @@ export default function AbuseReports() {
                               }
                             >
                               <CheckCircle className="mr-1 h-3 w-3" />
-                              Resolve
+                              {t('abuseReports.resolve')}
                             </Button>
                             <Button
                               size="sm"
@@ -172,16 +174,16 @@ export default function AbuseReports() {
                               }
                             >
                               <XCircle className="mr-1 h-3 w-3" />
-                              Dismiss
+                              {t('abuseReports.dismiss')}
                             </Button>
                           </>
                         ) : report.status === 'resolved' ? (
                           <span className="text-xs text-muted-foreground">
-                            {report.resolution ?? 'Resolved'}
+                            {report.resolution ?? t('abuseReports.resolved')}
                           </span>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            {report.resolution ?? 'Dismissed'}
+                            {report.resolution ?? t('abuseReports.dismissed')}
                           </span>
                         )}
                       </div>

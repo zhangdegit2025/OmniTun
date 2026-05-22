@@ -22,6 +22,7 @@ type Config struct {
 	StripeWebhookSecret string     `mapstructure:"stripe_webhook_secret"`
 	AdminAuthSecret     string     `mapstructure:"admin_auth_secret"`
 	AdminPort           int        `mapstructure:"admin_port"`
+	SCIMToken           string     `mapstructure:"scim_token"`
 	Auth                AuthConfig `mapstructure:"auth"`
 }
 

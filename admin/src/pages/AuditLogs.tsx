@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api'
 import type { AuditLog } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -24,6 +25,7 @@ const actionBadgeVariant: Record<string, 'default' | 'success' | 'warning' | 'de
 }
 
 export default function AuditLogs() {
+  const { t } = useTranslation()
   const [filters, setFilters] = useState({
     org_id: '',
     action: '',
@@ -79,12 +81,12 @@ export default function AuditLogs() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Audit Logs</h1>
-          <p className="text-sm text-muted-foreground">View and export system-wide audit events</p>
+          <h1 className="text-2xl font-bold">{t('auditLogs.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('auditLogs.subtitle')}</p>
         </div>
         <Button variant="outline" size="sm" onClick={() => window.open(exportUrl, '_blank')}>
           <Download className="mr-2 h-4 w-4" />
-          Export JSON
+          {t('auditLogs.exportJson')}
         </Button>
       </div>
 
@@ -92,37 +94,37 @@ export default function AuditLogs() {
         <CardContent className="pt-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Input
-              label="Organization ID"
-              placeholder="Filter by org..."
+              label={t('auditLogs.orgId')}
+              placeholder={t('auditLogs.filterByOrg')}
               value={filters.org_id}
               onChange={(e) => handleFilterChange('org_id', e.target.value)}
             />
             <Input
-              label="Action"
-              placeholder="e.g. user.login"
+              label={t('auditLogs.action')}
+              placeholder={t('auditLogs.filterByAction')}
               value={filters.action}
               onChange={(e) => handleFilterChange('action', e.target.value)}
             />
             <Input
-              label="Resource Type"
-              placeholder="e.g. tunnel"
+              label={t('auditLogs.resourceType')}
+              placeholder={t('auditLogs.filterByResource')}
               value={filters.resource_type}
               onChange={(e) => handleFilterChange('resource_type', e.target.value)}
             />
             <Input
-              label="User ID"
-              placeholder="Filter by user..."
+              label={t('auditLogs.userId')}
+              placeholder={t('auditLogs.filterByUser')}
               value={filters.user_id}
               onChange={(e) => handleFilterChange('user_id', e.target.value)}
             />
             <Input
-              label="From Date"
+              label={t('auditLogs.fromDate')}
               type="datetime-local"
               value={filters.from}
               onChange={(e) => handleFilterChange('from', e.target.value)}
             />
             <Input
-              label="To Date"
+              label={t('auditLogs.toDate')}
               type="datetime-local"
               value={filters.to}
               onChange={(e) => handleFilterChange('to', e.target.value)}
@@ -134,16 +136,21 @@ export default function AuditLogs() {
       <Card>
         <CardHeader>
           <CardTitle>
-            Results {total > 0 && <span className="text-sm font-normal text-muted-foreground">({total} total)</span>}
+            {t('auditLogs.results')}{' '}
+            {total > 0 && (
+              <span className="text-sm font-normal text-muted-foreground">
+                ({t('auditLogs.total', { total })})
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {logsQuery.isError ? (
             <div className="flex flex-col items-center gap-2 rounded-lg border border-destructive/50 p-6 text-center">
               <AlertCircle className="h-8 w-8 text-destructive" />
-              <p className="text-sm text-destructive">Failed to load audit logs</p>
+              <p className="text-sm text-destructive">{t('auditLogs.failedToLoad')}</p>
               <Button variant="outline" size="sm" onClick={() => logsQuery.refetch()}>
-                Retry
+                {t('common.retry')}
               </Button>
             </div>
           ) : (
@@ -152,12 +159,12 @@ export default function AuditLogs() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-8" />
-                    <TableHead>Time</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Resource</TableHead>
-                    <TableHead>Org ID</TableHead>
-                    <TableHead>User ID</TableHead>
-                    <TableHead>Client IP</TableHead>
+                    <TableHead>{t('auditLogs.time')}</TableHead>
+                    <TableHead>{t('auditLogs.action')}</TableHead>
+                    <TableHead>{t('auditLogs.resource')}</TableHead>
+                    <TableHead>{t('auditLogs.orgId')}</TableHead>
+                    <TableHead>{t('auditLogs.userId')}</TableHead>
+                    <TableHead>{t('auditLogs.clientIp')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -209,20 +216,20 @@ export default function AuditLogs() {
                                 <div className="rounded-md bg-muted/50 p-3">
                                   <div className="grid gap-2 text-sm">
                                     <div>
-                                      <span className="font-medium text-muted-foreground">Full Resource ID: </span>
+                                      <span className="font-medium text-muted-foreground">{t('auditLogs.fullResourceId')}: </span>
                                       <span className="font-mono">{log.resource_id}</span>
                                     </div>
                                     <div>
-                                      <span className="font-medium text-muted-foreground">Full Org ID: </span>
+                                      <span className="font-medium text-muted-foreground">{t('auditLogs.fullOrgId')}: </span>
                                       <span className="font-mono">{log.org_id}</span>
                                     </div>
                                     <div>
-                                      <span className="font-medium text-muted-foreground">Full User ID: </span>
+                                      <span className="font-medium text-muted-foreground">{t('auditLogs.fullUserId')}: </span>
                                       <span className="font-mono">{log.user_id}</span>
                                     </div>
                                     {log.details && (
                                       <div>
-                                        <span className="font-medium text-muted-foreground">Details: </span>
+                                        <span className="font-medium text-muted-foreground">{t('auditLogs.details')}: </span>
                                         <span className="font-mono text-xs">{log.details}</span>
                                       </div>
                                     )}
@@ -239,7 +246,7 @@ export default function AuditLogs() {
               {data?.logs && data.logs.length === 0 && (
                 <div className="py-8 text-center text-sm text-muted-foreground">
                   <Search className="mx-auto mb-2 h-6 w-6" />
-                  No audit logs found matching your filters
+                  {t('auditLogs.noResults')}
                 </div>
               )}
 
@@ -251,10 +258,10 @@ export default function AuditLogs() {
                     disabled={page === 0}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Previous
+                    {t('auditLogs.previous')}
                   </Button>
                   <span className="text-sm text-muted-foreground">
-                    Page {page + 1} of {totalPages}
+                    {t('auditLogs.page', { current: page + 1, total: totalPages })}
                   </span>
                   <Button
                     variant="outline"
@@ -262,7 +269,7 @@ export default function AuditLogs() {
                     disabled={page >= totalPages - 1}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Next
+                    {t('auditLogs.next')}
                   </Button>
                 </div>
               )}

@@ -153,6 +153,49 @@ export interface TenantCertificate {
   status: 'valid' | 'expiring_soon' | 'expired'
 }
 
+export interface Invoice {
+  id: string
+  customer: string
+  amount: number
+  subtotal: number
+  tax: number
+  status: 'paid' | 'pending' | 'overdue' | 'void'
+  date: string
+  due_date: string
+  payment_method: string
+  items: InvoiceItem[]
+  organization?: { id: string; name: string }
+}
+
+export interface InvoiceItem {
+  description: string
+  quantity: number
+  unit_price: number
+  total: number
+}
+
+export interface PricingPlan {
+  id: string
+  name: string
+  price_monthly_usd: number
+  max_tunnels: number
+  max_bandwidth_gb: number
+  features: string[]
+}
+
+export interface DiscountCode {
+  id: string
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number
+  uses: number
+  max_uses: number
+  active: boolean
+  expires_at: string
+  created_at: string
+  applicable_plans: string
+}
+
 export interface MRRData {
   mrr: number
   arr: number
@@ -252,4 +295,110 @@ export interface CustomerHealth {
   health_score: number
   trend: { date: string; score: number }[]
   factors: { factor: string; score: number; weight: number }[]
+}
+
+export interface CustomRole {
+  id: string
+  name: string
+  permissions: string[]
+  assigned_users: number
+  created_at: string
+  updated_at: string
+}
+
+export interface IPWhitelistEntry {
+  id: string
+  org_id: string
+  cidr: string
+  label: string
+  created_at: string
+}
+
+export interface IPWhitelistConfig {
+  entries: IPWhitelistEntry[]
+  enabled: boolean
+}
+
+export interface RetentionSettings {
+  audit_logs: string
+  traffic_events: string
+  user_sessions: string
+}
+
+export interface RetentionUsage {
+  audit_logs: { count: number; size_bytes: number; size_mb: number }
+  traffic_events: { count: number; size_bytes: number; size_mb: number }
+  user_sessions: { count: number; size_bytes: number; size_mb: number }
+}
+
+export interface RetentionData {
+  settings: RetentionSettings
+  usage: RetentionUsage
+  plan_limits: Record<string, string>
+  last_cleanup: string
+}
+
+export interface SLAUptimeData {
+  current_month: {
+    api_uptime: number
+    tunnel_control_plane: number
+    relay_data_plane: number
+  }
+  previous_month: {
+    api_uptime: number
+    tunnel_control_plane: number
+    relay_data_plane: number
+  }
+  monthly_trend: {
+    month: string
+    api_uptime: number
+    control_plane: number
+    data_plane: number
+  }[]
+}
+
+export interface SLAIncident {
+  id: string
+  date: string
+  duration: string
+  duration_minutes: number
+  impact: string
+  root_cause: string
+  status: string
+  affected_services: string[]
+}
+
+export interface SLACreditData {
+  current_month: {
+    sla_breached: boolean
+    credits_owed: number
+    breach_threshold: number
+    actual_uptime: number
+  }
+  history: {
+    month: string
+    uptime: number
+    sla_met: boolean
+    credits: number
+  }[]
+  total_credits_ytd: number
+  sla_thresholds: Record<string, number>
+  credit_formula: Record<string, string>
+}
+
+export interface AuditReportTemplate {
+  id: string
+  name: string
+  description: string
+}
+
+export interface AuditReportHistory {
+  id: string
+  template: string
+  generated_by: string
+  generated_at: string
+  format: string
+  date_range: { from: string; to: string }
+  org_filter: string
+  size_bytes: number
 }
